@@ -1,5 +1,5 @@
-﻿import numpy as np
-from ironplot import *
+﻿from ironplot import *
+import numpy as np
 angle = np.arange(0, 365, 5)
 val = (1.0 + np.sin(angle * 4 / 180.0 * np.pi)) * 10.0
 series = radial(angle, val, Name="Test1")

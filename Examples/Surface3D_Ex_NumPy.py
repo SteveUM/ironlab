@@ -1,5 +1,5 @@
-from numpy import *
 from ironplot import *
+from numpy import *
 [x, y] = mgrid[0:15:0.2, 0:10:0.2]
 window(5)
 tab(1)

@@ -1,5 +1,5 @@
-﻿import numpy as np
-import ironplot as ip
+﻿import ironplot as ip
+import numpy as np
 pi = np.pi
 dphi, dtheta = pi/100.0, pi/100.0
 [phi,theta] = np.mgrid[0:pi+dphi*1.5:dphi,0:2*pi+dtheta*1.5:dtheta]

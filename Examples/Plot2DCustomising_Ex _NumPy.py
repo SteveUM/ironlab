@@ -1,7 +1,7 @@
 ﻿# Try running all at once, or running one line at a time to see graph update.
 
-import numpy as np
 from ironplot import * 
+import numpy as np
 
 x = np.arange(0,10,0.1)
 # Add a red line

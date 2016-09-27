@@ -1,5 +1,5 @@
-﻿import numpy as np
-import ironplot as ip
+﻿import ironplot as ip
+import numpy as np
 
 # plot Rastrigrin function
 x1 = np.arange(-5.12, 5.12, 0.1024)

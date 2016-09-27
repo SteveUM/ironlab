@@ -1,5 +1,5 @@
-﻿import numpy as np
-from ironplot import *
+﻿from ironplot import *
+import numpy as np
 x = np.arange(0, 10, 0.01)
 y = np.sin(x) * x**2
 dydx = (y[1:] - y[0:-1]) / 0.01
