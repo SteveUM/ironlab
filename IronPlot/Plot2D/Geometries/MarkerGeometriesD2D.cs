@@ -26,6 +26,7 @@ namespace IronPlot
                         Width = width,
                         Height = height
                     });
+                    
                     break;
                 case MarkersType.Circle:
                     geometry = new EllipseGeometry(factory, new Ellipse()
@@ -41,7 +42,8 @@ namespace IronPlot
                     using (GeometrySink sink = (geometry as PathGeometry).Open())
                     {
                         PointF p0 = new PointF((float)markerSpecification.X[0] * width,  (float)markerSpecification.Y[0] * height); 
-                        sink.BeginFigure(p0, FigureBegin.Hollow);
+                        //sink.BeginFigure(p0, FigureBegin.Hollow);
+                        sink.BeginFigure(p0, FigureBegin.Filled);
                         int n = markerSpecification.X.Length;
                         for (int i = 1; i < n; ++i)
                         {

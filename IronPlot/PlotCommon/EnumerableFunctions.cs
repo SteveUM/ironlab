@@ -305,6 +305,7 @@ namespace IronPlot
         /// <returns>The index of the item or -1 if not found.</returns>
         public static int IndexOf(this IEnumerable that, object value)
         {
+            if (null == value) { return -1; }
             int index = 0;
             foreach (object item in that)
             {

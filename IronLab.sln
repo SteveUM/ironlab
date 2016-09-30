@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonConsoleControl", "IronPythonConsole\PythonConsoleControl\PythonConsoleControl.csproj", "{F1152D68-346B-4F48-8DB7-BE67B5CB1F49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronPythonConsole", "IronPythonConsole\IronPythonConsole\IronPythonConsole.csproj", "{8A19EAA5-44C5-41EC-A908-7F41792CF18B}"
@@ -8,7 +10,44 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronPythonConsole", "IronPy
 		{F1152D68-346B-4F48-8DB7-BE67B5CB1F49} = {F1152D68-346B-4F48-8DB7-BE67B5CB1F49}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplication", "Examples\WpfApplication\WpfApplication.csproj", "{6D6FC897-2259-43A4-B54A-73367BFBDFC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronLabApp", "IronLabApp\IronLabApp.csproj", "{13746A5A-0578-418A-B595-9BDBBA0AE177}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC} = {9843B558-B6C8-46B4-9578-6766E08F8CAC}
+		{F1152D68-346B-4F48-8DB7-BE67B5CB1F49} = {F1152D68-346B-4F48-8DB7-BE67B5CB1F49}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{BD59C315-851F-4476-801D-D9E93DB8BF6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{1D2FDB0D-00D7-480C-A119-3C5A39AF40A0}"
+	ProjectSection(SolutionItems) = preProject
+		ILabPythonLib\ironplot\__init__.py = ILabPythonLib\ironplot\__init__.py
+		ILabPythonLib\ironplot\ironplot_functions.py = ILabPythonLib\ironplot\ironplot_functions.py
+		ILabPythonLib\ironplot\ironplot_mscharts.py = ILabPythonLib\ironplot\ironplot_mscharts.py
+		ILabPythonLib\ironplot\ironplot_windows.py = ILabPythonLib\ironplot\ironplot_windows.py
+		ILabPythonLib\ironplot\IronPython_numpy_scipy.py = ILabPythonLib\ironplot\IronPython_numpy_scipy.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0C523F67-85C7-4F0B-BD61-DCE819A7DB64}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\Direct2D_Ex.py = Examples\Direct2D_Ex.py
+		Examples\MicrosoftCharting_Ex.py = Examples\MicrosoftCharting_Ex.py
+		Examples\Plot2DCustomising_Ex _NumPy.py = Examples\Plot2DCustomising_Ex _NumPy.py
+		Examples\Plot2DCustomising_Ex.py = Examples\Plot2DCustomising_Ex.py
+		Examples\Plot2DMultipleAxis_Ex.py = Examples\Plot2DMultipleAxis_Ex.py
+		Examples\Plot2DMultipleAxis_Ex_NumPy.py = Examples\Plot2DMultipleAxis_Ex_NumPy.py
+		Examples\Plot2DSimple_Ex.py = Examples\Plot2DSimple_Ex.py
+		Examples\Plot2DSimple_Ex_NumPy.py = Examples\Plot2DSimple_Ex_NumPy.py
+		Examples\PlottingOverview_Ex _NumPy.py = Examples\PlottingOverview_Ex _NumPy.py
+		Examples\PlottingOverview_Ex.py = Examples\PlottingOverview_Ex.py
+		Examples\Radial_Ex.py = Examples\Radial_Ex.py
+		Examples\Shape3D_Ex.py = Examples\Shape3D_Ex.py
+		Examples\Shape3D_Ex_NumPy.py = Examples\Shape3D_Ex_NumPy.py
+		Examples\Shape3D_Rastrigrin_Numpy.py = Examples\Shape3D_Rastrigrin_Numpy.py
+		Examples\Surface3D_Ex.py = Examples\Surface3D_Ex.py
+		Examples\Surface3D_Ex_NumPy.py = Examples\Surface3D_Ex_NumPy.py
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronPlot", "IronPlot\IronPlot.csproj", "{9843B558-B6C8-46B4-9578-6766E08F8CAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,20 +87,44 @@ Global
 		{8A19EAA5-44C5-41EC-A908-7F41792CF18B}.Release|Win32.ActiveCfg = Release|x86
 		{8A19EAA5-44C5-41EC-A908-7F41792CF18B}.Release|x86.ActiveCfg = Release|x86
 		{8A19EAA5-44C5-41EC-A908-7F41792CF18B}.Release|x86.Build.0 = Release|x86
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|Win32.ActiveCfg = Release|Any CPU
-		{6D6FC897-2259-43A4-B54A-73367BFBDFC9}.Release|x86.ActiveCfg = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|Win32.Build.0 = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Debug|x86.Build.0 = Debug|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Win32.ActiveCfg = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|Win32.Build.0 = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|x86.ActiveCfg = Release|Any CPU
+		{13746A5A-0578-418A-B595-9BDBBA0AE177}.Release|x86.Build.0 = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|Win32.Build.0 = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Debug|x86.Build.0 = Debug|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Win32.ActiveCfg = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|Win32.Build.0 = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|x86.ActiveCfg = Release|Any CPU
+		{9843B558-B6C8-46B4-9578-6766E08F8CAC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1D2FDB0D-00D7-480C-A119-3C5A39AF40A0} = {BD59C315-851F-4476-801D-D9E93DB8BF6C}
+		{0C523F67-85C7-4F0B-BD61-DCE819A7DB64} = {BD59C315-851F-4476-801D-D9E93DB8BF6C}
 	EndGlobalSection
 EndGlobal

@@ -76,7 +76,10 @@ namespace IronPlot
         private static void OnStrokePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             DirectPath localDirectPath = (DirectPath)obj;
-            localDirectPath.SetBrush(((System.Windows.Media.SolidColorBrush)e.NewValue).Color);
+            if (e.NewValue != null)
+            {
+                localDirectPath.SetBrush(((System.Windows.Media.SolidColorBrush)e.NewValue).Color);
+            }
         }
 
         DirectImage directImage;
@@ -163,7 +166,10 @@ namespace IronPlot
         internal void RecreateDisposables()
         {
             DisposeDisposables();
-            SetBrush(((System.Windows.Media.SolidColorBrush)GetValue(StrokeProperty)).Color);
+            if ((System.Windows.Media.SolidColorBrush)GetValue(StrokeProperty) != null)
+            {
+                SetBrush(((System.Windows.Media.SolidColorBrush)GetValue(StrokeProperty)).Color);
+            }
             SetFillBrush(((System.Windows.Media.SolidColorBrush)GetValue(FillProperty)).Color);
             // Geometry will be re-created when the containing Direct2DControl is next Arranged.
         }

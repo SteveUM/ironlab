@@ -11,15 +11,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using IronPlot.PlotCommon;
 
 namespace IronPlot
-{   
+{
     public class Plot2DCurve : Plot2DItem
     {
         //VisualLine visualLine;
         protected MatrixTransform graphToCanvas = new MatrixTransform(Matrix.Identity);
         protected MatrixTransform canvasToGraph = new MatrixTransform(Matrix.Identity);
-        
+
         // WPF elements:
         private PlotPath line;
         private PlotPath markers;
@@ -29,73 +30,72 @@ namespace IronPlot
         private LegendItem legendItem;
 
         // An annotation marker for displaying coordinates of a position.
-        PlotPointAnnotation annotation; 
-        
+        PlotPointAnnotation annotation;
+
         // Direct2D elements:
         private DirectPath lineD2D;
         private DirectPathScatter markersD2D;
 
         #region DependencyProperties
+
         public static readonly DependencyProperty MarkersTypeProperty =
-            DependencyProperty.Register("MarkersType",
-            typeof(MarkersType), typeof(Plot2DCurve),
-            new PropertyMetadata(MarkersType.None,
-                OnMarkersChanged));
+            DependencyProperty.Register("MarkersType", typeof(MarkersType), typeof(Plot2DCurve), new PropertyMetadata(MarkersType.None, OnMarkersChanged));
 
         public static readonly DependencyProperty MarkersSizeProperty =
-            DependencyProperty.Register("MarkersSize",
-            typeof(double), typeof(Plot2DCurve),
-            new PropertyMetadata(10.0,
-                OnMarkersChanged));
+            DependencyProperty.Register("MarkersSize", typeof(double), typeof(Plot2DCurve), new PropertyMetadata(10.0, OnMarkersChanged));
 
         public static readonly DependencyProperty MarkersFillProperty =
-            DependencyProperty.Register("MarkersFill",
-            typeof(Brush), typeof(Plot2DCurve),
-            new PropertyMetadata(Brushes.Transparent));
+            DependencyProperty.Register("MarkersFill", typeof(Brush), typeof(Plot2DCurve), new PropertyMetadata(Brushes.Transparent));
 
         public static readonly DependencyProperty StrokeProperty =
-            DependencyProperty.Register("Stroke",
-            typeof(Brush), typeof(Plot2DCurve),
-            new PropertyMetadata(Brushes.Black));
+            DependencyProperty.Register("Stroke", typeof(Brush), typeof(Plot2DCurve), new PropertyMetadata(Brushes.Black));
 
         public static readonly DependencyProperty StrokeThicknessProperty =
-            DependencyProperty.Register("StrokeThickness",
-            typeof(double), typeof(Plot2DCurve),
-            new PropertyMetadata(1.0));
+            DependencyProperty.Register("StrokeThickness", typeof(double), typeof(Plot2DCurve), new PropertyMetadata(1.0));
 
         public static readonly DependencyProperty QuickLineProperty =
-            DependencyProperty.Register("QuickLine",
-            typeof(string), typeof(Plot2DCurve),
-            new PropertyMetadata("-k",
-            OnQuickLinePropertyChanged));
+            DependencyProperty.Register("QuickLine", typeof(string), typeof(Plot2DCurve), new PropertyMetadata("-k", OnQuickLinePropertyChanged));
 
         public static readonly DependencyProperty QuickStrokeDashProperty =
-            DependencyProperty.Register("QuickStrokeDash",
-            typeof(QuickStrokeDash), typeof(Plot2DCurve),
-            new PropertyMetadata(QuickStrokeDash.Solid,
-            OnQuickStrokeDashPropertyChanged));
+            DependencyProperty.Register("QuickStrokeDash", typeof(QuickStrokeDash), typeof(Plot2DCurve), new PropertyMetadata(QuickStrokeDash.Solid, OnQuickStrokeDashPropertyChanged));
 
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title",
-            typeof(string), typeof(Plot2DCurve),
-            new PropertyMetadata(String.Empty));
+            DependencyProperty.Register("Title", typeof(string), typeof(Plot2DCurve), new PropertyMetadata(String.Empty));
+
 
         public static readonly DependencyProperty AnnotationPositionProperty =
-            DependencyProperty.Register("AnnotationPosition",
-            typeof(Point), typeof(Plot2DCurve),
-            new PropertyMetadata(new Point(Double.NaN, Double.NaN),
-                OnAnnotationPositionChanged));
+            DependencyProperty.Register("AnnotationPosition", typeof(Point), typeof(Plot2DCurve), new PropertyMetadata(new Point(Double.NaN, Double.NaN), OnAnnotationPositionChanged));
 
         public static readonly DependencyProperty AnnotationEnabledProperty =
-            DependencyProperty.Register("AnnotationEnabled",
-            typeof(bool), typeof(Plot2DCurve),
-            new PropertyMetadata(true,
-                OnAnnotationEnabledChanged));
+            DependencyProperty.Register("AnnotationEnabled", typeof(bool), typeof(Plot2DCurve), new PropertyMetadata(true, OnAnnotationEnabledChanged));
 
         public static readonly DependencyProperty UseDirect2DProperty =
-            DependencyProperty.Register("UseDirect2D",
-            typeof(bool), typeof(Plot2DCurve),
-            new PropertyMetadata(false, OnUseDirect2DChanged));
+            DependencyProperty.Register("UseDirect2D", typeof(bool), typeof(Plot2DCurve), new PropertyMetadata(false, OnUseDirect2DChanged));
+
+        #region PyPlot property equivalents
+
+        public static readonly DependencyProperty LabelProperty =
+            DependencyProperty.Register("label", typeof(string), typeof(Plot2DCurve), new PropertyMetadata(String.Empty));
+
+        public static readonly DependencyProperty LineStyleProperty =
+            DependencyProperty.Register("linestyle", typeof(string), typeof(Plot2DCurve), new PropertyMetadata("-", OnQuickStrokeDashPropertyChanged));
+
+        public static readonly DependencyProperty LineWidthProperty =
+            DependencyProperty.Register("linewidth", typeof(double), typeof(Plot2DCurve), new PropertyMetadata(1.0));
+
+        public static readonly DependencyProperty ColorProperty =
+            DependencyProperty.Register("color", typeof(object), typeof(Plot2DCurve), new PropertyMetadata("k"));
+
+        public static readonly DependencyProperty MarkersFaceColorProperty =
+            DependencyProperty.Register("markerfacecolor", typeof(object), typeof(Plot2DCurve), new PropertyMetadata(" "));
+
+        public static readonly DependencyProperty MarkerSizeProperty =
+            DependencyProperty.Register("markersize", typeof(double), typeof(Plot2DCurve), new PropertyMetadata(10.0, OnMarkersChanged));
+
+        public static readonly DependencyProperty MarkerProperty =
+            DependencyProperty.Register("marker", typeof(object), typeof(Plot2DCurve), new PropertyMetadata(".", OnMarkersChanged));
+
+        #endregion
 
         /// <summary>
         /// Desired annotation mapping goes here.
@@ -108,94 +108,154 @@ namespace IronPlot
         /// </summary>
         public string QuickLine
         {
-            set
-            {
-                SetValue(QuickLineProperty, value);
-            }
-            get
-            {
-                return GetLinePropertyFromStrokeProperties();
-            }
+            set { SetValue(QuickLineProperty, value); }
+            get { return PlotSettingsFactory.PlotSettingsToString(QuickStrokeDash, MarkersType, (SolidColorBrush)Stroke); }
         }
 
         public QuickStrokeDash QuickStrokeDash
         {
+            set { SetValue(QuickStrokeDashProperty, value); }
+            get { return (QuickStrokeDash)GetValue(QuickStrokeDashProperty); }
+        }
+
+
+        public string linestyle
+        {
+            get { return PlotSettingsFactory.LineStyleMap.Where(kvp => kvp.Value == QuickStrokeDash).Select(n => n.Key).FirstOrDefault(); }
             set
             {
-                SetValue(QuickStrokeDashProperty, value);
+                QuickStrokeDash lineStyleResult = IronPlot.QuickStrokeDash.None;
+                if (PlotSettingsFactory.LineStyleMap.ContainsKey(value.ToLower()))
+                {
+                    lineStyleResult = PlotSettingsFactory.LineStyleMap[value];
+                }
+                SetValue(QuickStrokeDashProperty, lineStyleResult);
             }
-            get { return (QuickStrokeDash)GetValue(QuickStrokeDashProperty); }
         }
 
         public MarkersType MarkersType
         {
+            set { SetValue(MarkersTypeProperty, value); }
+            get { return (MarkersType)GetValue(MarkersTypeProperty); }
+        }
+
+        public object marker
+        {
             set
             {
-                SetValue(MarkersTypeProperty, value);
+                try
+                {
+                    if (value.GetType() == typeof(int)) //special handling for integer ids
+                    {
+                        value = "#" + Convert.ToString(value);
+                    }
+                }
+                catch
+                {
+                    value = ".";
+                }
+
+                MarkersType key = PlotSettingsFactory.MarkerStyleMap.FirstOrDefault(x => x.Value == ((string)value).ToLower()).Key;
+                SetValue(MarkersTypeProperty, key);
             }
-            get { return (MarkersType)GetValue(MarkersTypeProperty); }
+            get { return PlotSettingsFactory.MarkerStyleMap[MarkersType]; }
         }
 
         public double MarkersSize
         {
-            set
-            {
-                SetValue(MarkersSizeProperty, value);
-            }
+            set { SetValue(MarkersSizeProperty, value); }
+            get { return (double)GetValue(MarkersSizeProperty); }
+        }
+
+        public double markersize
+        {
+            set { SetValue(MarkersSizeProperty, value); }
             get { return (double)GetValue(MarkersSizeProperty); }
         }
 
         public Brush MarkersFill
         {
+            set { SetValue(MarkersFillProperty, value); }
+            get { return (Brush)GetValue(MarkersFillProperty); }
+        }
+
+        public object markerfacecolor
+        {
             set
             {
-                SetValue(MarkersFillProperty, value);
+                if (value.GetType() == typeof(string))
+                {
+                    if (PlotSettingsFactory.LineColorMap.ContainsKey(((string)value).ToLower()))
+                    {
+                        MarkersFill = PlotSettingsFactory.LineColorMap[((string)value).ToLower()];
+                    }
+                    else if (((string)value).StartsWith("#"))
+                    {
+                        MarkersFill = (Brush)new BrushConverter().ConvertFromString((string)value);
+                    }
+                }
             }
             get { return (Brush)GetValue(MarkersFillProperty); }
         }
 
         public Brush Stroke
         {
+            set { SetValue(StrokeProperty, value); }
+            get { return (Brush)GetValue(StrokeProperty); }
+        }
+
+        public object color
+        {
+            get { return PlotSettingsFactory.LineColorMap.Where(kvp => kvp.Value == Stroke).Select(n => n.Key).FirstOrDefault(); }
             set
             {
-                SetValue(StrokeProperty, value);
+                if (value.GetType() == typeof(string))
+                {
+                    if (PlotSettingsFactory.LineColorMap.ContainsKey(((string)value).ToLower()))
+                    {
+                        Stroke = PlotSettingsFactory.LineColorMap[((string)value).ToLower()];
+                    }
+                    else if (((string)value).StartsWith("#"))
+                    {
+                        Stroke = (Brush)new BrushConverter().ConvertFromString((string)value);
+                    }
+                }
             }
-            get { return (Brush)GetValue(StrokeProperty); }
         }
 
         public double StrokeThickness
         {
-            set
-            {
-                SetValue(StrokeThicknessProperty, value);
-            }
+            set { SetValue(StrokeThicknessProperty, value); }
+            get { return (double)GetValue(StrokeThicknessProperty); }
+        }
+
+        public double linewidth
+        {
+            set { SetValue(StrokeThicknessProperty, value); }
             get { return (double)GetValue(StrokeThicknessProperty); }
         }
 
         public string Title
         {
-            set
-            {
-                SetValue(TitleProperty, value);
-            }
+            set { SetValue(TitleProperty, value); }
+            get { return (string)GetValue(TitleProperty); }
+        }
+
+        public string label
+        {
+            set { SetValue(TitleProperty, value); }
             get { return (string)GetValue(TitleProperty); }
         }
 
         public Point AnnotationPosition
         {
-            set
-            {
-                SetValue(AnnotationPositionProperty, value);
-            }
+            set { SetValue(AnnotationPositionProperty, value); }
             get { return (Point)GetValue(AnnotationPositionProperty); }
         }
 
         public bool AnnotationEnabled
         {
-            set
-            {
-                SetValue(AnnotationEnabledProperty, value);
-            }
+            set { SetValue(AnnotationEnabledProperty, value); }
             get { return (bool)GetValue(AnnotationEnabledProperty); }
         }
 
@@ -205,6 +265,15 @@ namespace IronPlot
             if (((Plot2DCurve)obj).Plot != null)
                 ((Plot2DCurve)obj).Plot.PlotPanel.InvalidateArrange();
         }
+
+        //protected static void markerSetting(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        //{
+        //    ((Plot2DCurve)obj).UpdateLegendMarkers();
+        //    if (((Plot2DCurve)obj).Plot != null)
+        //    {
+        //        ((Plot2DCurve)obj).Plot.PlotPanel.InvalidateArrange();
+        //    }
+        //}
 
         protected static void OnQuickLinePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
@@ -238,13 +307,13 @@ namespace IronPlot
         protected static void OnAnnotationEnabledChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             Plot2DCurve localCurve = (Plot2DCurve)obj;
-            if ((bool)e.NewValue == false) localCurve.annotation.Visibility = Visibility.Collapsed; 
+            if ((bool)e.NewValue == false) localCurve.annotation.Visibility = Visibility.Collapsed;
         }
 
         #endregion
 
         private Curve curve;
-        
+
         protected override void OnHostChanged(PlotPanel host)
         {
             base.OnHostChanged(host);
@@ -256,8 +325,8 @@ namespace IronPlot
                     this.host = host;
                     BindingOperations.ClearBinding(this, Plot2DCurve.UseDirect2DProperty);
                 }
-                catch (Exception) 
-                { 
+                catch (Exception)
+                {
                     // Just swallow any exception 
                 }
             }
@@ -277,7 +346,7 @@ namespace IronPlot
         private void AddElements()
         {
             if ((bool)GetValue(UseDirect2DProperty) == false)
-            {   
+            {
                 line.Data = LineGeometries.PathGeometryFromCurve(curve, null);
                 line.SetValue(Canvas.ZIndexProperty, 200);
                 line.Data.Transform = graphToCanvas;
@@ -394,7 +463,7 @@ namespace IronPlot
         internal override void BeforeArrange()
         {
             graphToCanvas.Matrix = new Matrix(xAxis.Scale, 0, 0, -yAxis.Scale, -xAxis.Offset - xAxis.AxisPadding.Lower, yAxis.Offset + yAxis.AxisTotalLength - yAxis.AxisPadding.Upper);
-            canvasToGraph = (MatrixTransform)(graphToCanvas.Inverse); 
+            canvasToGraph = (MatrixTransform)(graphToCanvas.Inverse);
             Curve.FilterMinMax(canvasToGraph, new Rect(new Point(xAxis.Min, yAxis.Min), new Point(xAxis.Max, yAxis.Max)));
             if (host.UseDirect2D == true && !host.direct2DControl.InitializationFailed)
             {
@@ -422,7 +491,7 @@ namespace IronPlot
             Point graphPoint = canvasToGraph.Transform(canvasPoint);
             double value = curve.SortedValues == SortedValues.X ? graphPoint.X : graphPoint.Y;
             int index = Curve.GetInterpolatedIndex(curve.TransformedSorted, value);
-            if (index == (curve.xTransformed.Length - 1)) return curve.SortedToUnsorted[curve.xTransformed.Length - 1]; 
+            if (index == (curve.xTransformed.Length - 1)) return curve.SortedToUnsorted[curve.xTransformed.Length - 1];
             // otherwise return nearest:
             if ((curve.TransformedSorted[index + 1] - value) < (value - curve.TransformedSorted[index]))
                 return curve.SortedToUnsorted[index + 1];
@@ -444,16 +513,16 @@ namespace IronPlot
 
         public override Rect PaddedBounds
         {
-            get 
-            {  
-                Rect paddedBounds =  new Rect(bounds.Left - 0.05 * bounds.Width, bounds.Top - 0.05 * bounds.Height, bounds.Width * 1.1, bounds.Height * 1.1);
-                return TransformRect(paddedBounds, xAxis.CanvasTransform, yAxis.CanvasTransform); 
+            get
+            {
+                Rect paddedBounds = new Rect(bounds.Left - 0.05 * bounds.Width, bounds.Top - 0.05 * bounds.Height, bounds.Width * 1.1, bounds.Height * 1.1);
+                return TransformRect(paddedBounds, xAxis.CanvasTransform, yAxis.CanvasTransform);
             }
         }
 
         private Rect TransformRect(Rect rect, Func<double, double> transformX, Func<double, double> transformY)
         {
-            return new Rect(new Point(transformX(rect.Left), transformY(rect.Top)), new Point(transformX(rect.Right), transformY(rect.Bottom))); 
+            return new Rect(new Point(transformX(rect.Left), transformY(rect.Top)), new Point(transformX(rect.Right), transformY(rect.Bottom)));
         }
 
         public PlotPath Line
@@ -476,90 +545,57 @@ namespace IronPlot
             get { return curve; }
         }
 
-        protected string GetLinePropertyFromStrokeProperties()
-        {
-            string lineProperty = "";
-            switch ((QuickStrokeDash)GetValue(QuickStrokeDashProperty))
-            {
-                case QuickStrokeDash.Solid:
-                    lineProperty = "-";
-                    break;
-                case QuickStrokeDash.Dash:
-                    lineProperty = "--";
-                    break;
-                case QuickStrokeDash.Dot:
-                    lineProperty = ":";
-                    break;
-                case QuickStrokeDash.DashDot:
-                    lineProperty = "-.";
-                    break;
-                case QuickStrokeDash.None:
-                    lineProperty = "";
-                    break;
-            }
-            switch ((MarkersType)GetValue(MarkersTypeProperty))
-            {
-                case MarkersType.Square:
-                    lineProperty += "s";
-                    break;
-                case MarkersType.Circle:
-                    lineProperty += "o";
-                    break;
-                case MarkersType.TrianglePointUp:
-                    lineProperty += "^";
-                    break;
-            }
-            Brush brush = (Brush)GetValue(StrokeProperty);
-            if (brush == Brushes.Red) lineProperty += "r";
-            if (brush == Brushes.Green) lineProperty += "g";
-            if (brush == Brushes.Blue) lineProperty += "b";
-            if (brush == Brushes.Yellow) lineProperty += "y";
-            if (brush == Brushes.Cyan) lineProperty += "c";
-            if (brush == Brushes.Magenta) lineProperty += "m";
-            if (brush == Brushes.Black) lineProperty += "k";
-            if (brush == Brushes.White) lineProperty += "w";
-            return lineProperty;
-        }
+        //protected string GetLinePropertyFromStrokeProperties()
+        //{
+        //    string lineProperty = "";
+        //    switch ((QuickStrokeDash)GetValue(QuickStrokeDashProperty))
+        //    {
+        //        case QuickStrokeDash.Solid:
+        //            lineProperty = "-";
+        //            break;
+        //        case QuickStrokeDash.Dash:
+        //            lineProperty = "--";
+        //            break;
+        //        case QuickStrokeDash.Dot:
+        //            lineProperty = ":";
+        //            break;
+        //        case QuickStrokeDash.DashDot:
+        //            lineProperty = "-.";
+        //            break;
+        //        case QuickStrokeDash.None:
+        //            lineProperty = "";
+        //            break;
+        //    }
+        //    switch ((MarkersType)GetValue(MarkersTypeProperty))
+        //    {
+        //        case MarkersType.Square:
+        //            lineProperty += "s";
+        //            break;
+        //        case MarkersType.Circle:
+        //            lineProperty += "o";
+        //            break;
+        //        case MarkersType.TriangleUp:
+        //            lineProperty += "^";
+        //            break;
+        //    }
+        //    Brush brush = (Brush)GetValue(StrokeProperty);
+        //    if (brush == Brushes.Red) lineProperty += "r";
+        //    if (brush == Brushes.Green) lineProperty += "g";
+        //    if (brush == Brushes.Blue) lineProperty += "b";
+        //    if (brush == Brushes.Yellow) lineProperty += "y";
+        //    if (brush == Brushes.Cyan) lineProperty += "c";
+        //    if (brush == Brushes.Magenta) lineProperty += "m";
+        //    if (brush == Brushes.Black) lineProperty += "k";
+        //    if (brush == Brushes.White) lineProperty += "w";
+        //    return lineProperty;
+        //}
 
         protected void SetStrokePropertiesFromLineProperty(string lineProperty)
         {
-            if (lineProperty == "") lineProperty = "-";
-            int currentIndex = 0;
-            // First check for line type
-            string firstTwo = null; string firstOne = null;
-            if (lineProperty.Length >= 2) firstTwo = lineProperty.Substring(0, 2);
-            if (lineProperty.Length >= 1) firstOne = lineProperty.Substring(0, 1);
-            if (firstTwo == "--") { SetValue(QuickStrokeDashProperty, QuickStrokeDash.Dash); currentIndex = 2; }
-            else if (firstTwo == "-.") { SetValue(QuickStrokeDashProperty, QuickStrokeDash.DashDot); currentIndex = 2; }
-            else if (firstOne == ":") { SetValue(QuickStrokeDashProperty, QuickStrokeDash.Dot); currentIndex = 1; }
-            else if (firstOne == "-") { SetValue(QuickStrokeDashProperty, QuickStrokeDash.Solid); currentIndex = 1; }
-            else SetValue(QuickStrokeDashProperty, QuickStrokeDash.None);
-            // 
-            // Next check for markers type
-            string marker = null;
-            if (lineProperty.Length >= currentIndex + 1) marker = lineProperty.Substring(currentIndex, 1);
-            if (marker == "s") { SetValue(MarkersTypeProperty, MarkersType.Square); currentIndex++; }
-            else if (marker == "o") { SetValue(MarkersTypeProperty, MarkersType.Circle); currentIndex++; }
-            else if (marker == "^") { SetValue(MarkersTypeProperty, MarkersType.TrianglePointUp); currentIndex++; }
-            else SetValue(MarkersTypeProperty, MarkersType.None);
-            //
-            // If no line and no marker, assume solid line
-            if ((MarkersType == MarkersType.None) && (this.QuickStrokeDash == QuickStrokeDash.None))
-            {
-                QuickStrokeDash = QuickStrokeDash.Solid;
-            }
-            // Finally check for colour
-            string colour = null;
-            if (lineProperty.Length >= currentIndex + 1) colour = lineProperty.Substring(currentIndex, 1);
-            if (colour == "r") SetValue(StrokeProperty, Brushes.Red);
-            else if (colour == "g") SetValue(StrokeProperty, Brushes.Green);
-            else if (colour == "b") SetValue(StrokeProperty, Brushes.Blue);
-            else if (colour == "y") SetValue(StrokeProperty, Brushes.Yellow);
-            else if (colour == "c") SetValue(StrokeProperty, Brushes.Cyan);
-            else if (colour == "m") SetValue(StrokeProperty, Brushes.Magenta);
-            else if (colour == "k") SetValue(StrokeProperty, Brushes.Black);
-            else if (colour == "w") SetValue(StrokeProperty, Brushes.White);
-            else SetValue(StrokeProperty, Brushes.Black);
+            var settings = PlotSettingsFactory.PlotSettings(lineProperty);
+            SetValue(QuickStrokeDashProperty, settings.Item1);
+            SetValue(MarkersTypeProperty, settings.Item2);
+            SetValue(StrokeProperty, settings.Item3);
         }
 
         protected void BindToThis(PlotPath target, bool includeFill, bool includeDotDash)
@@ -578,7 +614,7 @@ namespace IronPlot
             {
                 Binding dashBinding = new Binding("QuickStrokeDash") { Source = this, Mode = BindingMode.OneWay };
                 target.SetBinding(PlotPath.QuickStrokeDashProperty, dashBinding);
-            }     
+            }
         }
 
         protected void BindToThis(DirectPath target, bool includeFill, bool includeDotDash)
